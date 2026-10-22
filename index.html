@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Play DigitX – Pronostics football par abonnement</title>
+<meta name="description" content="Pronostics de football basés sur les statistiques. Abonnement au jour, à la semaine ou au mois. Paiement par Mobile Money.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --nuit: #0B2A3A;
+    --craie: #F2F6F4;
+    --pelouse: #14664A;
+    --jaune: #F2B705;
+    --rouge: #C8283A;
+    --gris: #5B6B73;
+    --trait: #D5DEDA;
+    --titre: "Barlow Condensed", "Arial Narrow", sans-serif;
+    --texte: "Source Sans 3", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: var(--texte); font-size: 1.05rem; line-height: 1.6; color: var(--nuit); background: var(--craie); }
+  a { color: inherit; }
+  :focus-visible { outline: 3px solid var(--jaune); outline-offset: 3px; }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 1.25rem; }
+  h1, h2, h3 { font-family: var(--titre); line-height: 1.05; letter-spacing: .01em; }
+  h2 { font-size: clamp(2rem, 6vw, 2.8rem); margin-bottom: 1.5rem; }
+
+  /* En-tête */
+  header { background: var(--nuit); color: var(--craie); }
+  header .wrap { display: flex; align-items: center; justify-content: space-between; padding-top: .9rem; padding-bottom: .9rem; }
+  .logo { font-family: var(--titre); font-size: 1.7rem; font-weight: 700; text-decoration: none; }
+  .logo span { color: var(--jaune); }
+  .btn { display: inline-block; font-family: var(--texte); font-weight: 600; font-size: 1rem; text-decoration: none; padding: .75rem 1.3rem; border-radius: 6px; background: var(--jaune); color: var(--nuit); border: 0; cursor: pointer; }
+  .btn:hover { background: #ffc81f; }
+  .btn.sombre { background: var(--nuit); color: var(--craie); }
+  .btn.sombre:hover { background: #12415a; }
+  header .btn { padding: .5rem 1rem; }
+
+  /* Hero */
+  .hero { background: var(--nuit); color: var(--craie); padding: 2.5rem 0 4rem; }
+  .hero .wrap { display: grid; gap: 2.5rem; align-items: center; }
+  .hero h1 { font-size: clamp(2.6rem, 9vw, 4.6rem); font-weight: 700; max-width: 14ch; }
+  .hero p { margin: 1.2rem 0 1.8rem; max-width: 46ch; color: #C9D8D2; }
+  @media (min-width: 820px) { .hero .wrap { grid-template-columns: 1.1fr .9fr; } }
+
+  /* Fiche de pronostic (exemple) */
+  .fiche { background: var(--craie); color: var(--nuit); border-radius: 10px; padding: 1.4rem; position: relative; box-shadow: 0 0 0 4px rgba(242,183,5,.25); }
+  .fiche::before, .fiche::after { content: ""; position: absolute; top: 4.1rem; width: 18px; height: 18px; border-radius: 50%; background: var(--nuit); }
+  .fiche::before { left: -9px; }
+  .fiche::after { right: -9px; }
+  .fiche .entete { display: flex; justify-content: space-between; font-size: .9rem; color: var(--gris); padding-bottom: 1.1rem; border-bottom: 2px dashed var(--trait); }
+  .fiche .match { font-family: var(--titre); font-size: 1.9rem; font-weight: 700; margin: 1rem 0 .2rem; }
+  .fiche .avis { margin-bottom: 1rem; color: var(--gris); }
+  .barre { margin: .7rem 0; font-size: .95rem; }
+  .barre .ligne { display: flex; justify-content: space-between; margin-bottom: .2rem; }
+  .barre .piste { height: 10px; background: var(--trait); border-radius: 5px; overflow: hidden; }
+  .barre .rempli { height: 100%; width: 0; background: var(--pelouse); border-radius: 5px; transition: width 1.1s ease-out; }
+  .barre.fort .rempli { background: var(--rouge); }
+  .fiche .note { margin-top: 1rem; font-size: .85rem; color: var(--gris); }
+
+  /* Sections */
+  section { padding: 4rem 0; }
+  .etapes { list-style: none; padding: 0; display: grid; gap: 1.5rem; counter-reset: etape; }
+  .etapes li { counter-increment: etape; padding-left: 3.4rem; position: relative; }
+  .etapes li::before { content: counter(etape); position: absolute; left: 0; top: 0; width: 2.4rem; height: 2.4rem; border-radius: 50%; background: var(--pelouse); color: #fff; font-family: var(--titre); font-size: 1.4rem; display: grid; place-items: center; }
+  .etapes strong { display: block; font-size: 1.15rem; }
+  @media (min-width: 820px) { .etapes { grid-template-columns: repeat(3, 1fr); } }
+
+  .formules { background: #fff; border-top: 1px solid var(--trait); border-bottom: 1px solid var(--trait); }
+  .grille { display: grid; gap: 1.25rem; }
+  @media (min-width: 820px) { .grille { grid-template-columns: repeat(3, 1fr); } }
+  .formule { border: 2px solid var(--trait); border-radius: 10px; padding: 1.6rem; display: flex; flex-direction: column; background: var(--craie); }
+  .formule.vedette { border-color: var(--pelouse); background: #fff; }
+  .formule h3 { font-size: 1.8rem; }
+  .prix { font-family: var(--titre); font-size: 3rem; font-weight: 700; margin: .4rem 0 1rem; }
+  .prix small { font-family: var(--texte); font-size: 1rem; font-weight: 400; color: var(--gris); }
+  .formule ul { padding-left: 1.1rem; margin-bottom: 1.5rem; flex: 1; }
+  .formule li { margin-bottom: .35rem; }
+  .formule .btn { text-align: center; }
+  .formule.vedette .btn { background: var(--pelouse); color: #fff; }
+  .formule.vedette .btn:hover { background: #1a7d5b; }
+
+  .paiement p { max-width: 60ch; }
+  .reseaux { display: flex; flex-wrap: wrap; gap: .6rem; margin: 1.2rem 0; }
+  .reseaux span { padding: .45rem 1rem; border-radius: 999px; font-weight: 600; }
+  .reseaux .orange { background: #FF7900; color: #000; }
+  .reseaux .mtn { background: #FFCC00; color: #000; }
+
+  details { border-bottom: 1px solid var(--trait); padding: 1rem 0; max-width: 700px; }
+  summary { cursor: pointer; font-weight: 600; font-size: 1.1rem; }
+  details p { margin-top: .6rem; color: var(--gris); }
+
+  footer { background: var(--nuit); color: #B7C7C0; padding: 2.5rem 0; font-size: .92rem; }
+  footer .logo { display: inline-block; margin-bottom: .8rem; color: var(--craie); }
+  footer p { max-width: 70ch; margin-bottom: .6rem; }
+
+  @media (prefers-reduced-motion: reduce) { .barre .rempli { transition: none; } html { scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="logo" href="#">Play <span>DigitX</span></a>
+    <a class="btn" href="#formules">S'abonner</a>
+  </div>
+</header>
+
+<main>
+  <div class="hero">
+    <div class="wrap">
+      <div>
+        <h1>Des pronostics de football appuyés sur les statistiques.</h1>
+        <p>Chaque jour, reçois des pronostics expliqués, pas des chiffres lancés au hasard. Choisis ta formule et paie par Mobile Money.</p>
+        <a class="btn" href="#formules">Voir les formules</a>
+      </div>
+
+      <div class="fiche" aria-label="Exemple de fiche de pronostic">
+        <div class="entete"><span>Fiche d'exemple</span><span>Football</span></div>
+        <div class="match">Équipe A – Équipe B</div>
+        <p class="avis">Chaque fiche explique le raisonnement derrière le pronostic.</p>
+        <div class="barre"><div class="ligne"><span>Victoire équipe A</span><span>55 %</span></div><div class="piste"><div class="rempli" data-w="55"></div></div></div>
+        <div class="barre"><div class="ligne"><span>Match nul</span><span>25 %</span></div><div class="piste"><div class="rempli" data-w="25"></div></div></div>
+        <div class="barre"><div class="ligne"><span>Victoire équipe B</span><span>20 %</span></div><div class="piste"><div class="rempli" data-w="20"></div></div></div>
+        <p class="note">Exemple pour illustrer le format. Ces chiffres ne correspondent pas à un vrai match.</p>
+      </div>
+    </div>
+  </div>
+
+  <section>
+    <div class="wrap">
+      <h2>Comment ça marche</h2>
+      <ol class="etapes">
+        <li><strong>Choisis une formule</strong>Jour, semaine ou mois, selon ce qui te convient.</li>
+        <li><strong>Paie par Mobile Money</strong>Orange Money ou MTN MoMo, sans carte bancaire.</li>
+        <li><strong>Reçois tes pronostics</strong>Tu les reçois chaque jour avec l'analyse qui les accompagne.</li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="formules" id="formules">
+    <div class="wrap">
+      <h2>Choisis ta formule</h2>
+      <div class="grille">
+        <article class="formule">
+          <h3>Jour</h3>
+          <div class="prix" data-prix="jour">2500<small>FCFA</small></div>
+          <ul><li>Les pronostics de la journée</li><li>Analyse de chaque match</li></ul>
+          <a class="btn sombre" data-plan="Jour" href="#">Prendre la formule Jour</a>
+        </article>
+        <article class="formule vedette">
+          <h3>Semaine</h3>
+          <div class="prix" data-prix="semaine">5000 <small>FCFA</small></div>
+          <ul><li>7 jours de pronostics</li><li>Analyse de chaque match</li><li>Moins cher qu'au jour le jour</li></ul>
+          <a class="btn" data-plan="Semaine" href="#">Prendre la formule Semaine</a>
+        </article>
+        <article class="formule">
+          <h3>Mois</h3>
+          <div class="prix" data-prix="mois">15000 <small>FCFA</small></div>
+          <ul><li>30 jours de pronostics</li><li>Analyse de chaque match</li><li>Le meilleur prix par jour</li></ul>
+          <a class="btn sombre" data-plan="Mois" href="#">Prendre la formule Mois</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="paiement">
+    <div class="wrap">
+      <h2>Paiement simple par Mobile Money</h2>
+      <p>Appuie sur le bouton de ta formule : un message WhatsApp s'ouvre, prêt à envoyer. Tu reçois ensuite les instructions pour payer, puis ton accès.</p>
+      <div class="reseaux"><span class="orange">Orange Money</span><span class="mtn">MTN MoMo</span></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2>Questions fréquentes</h2>
+      <details><summary>Les pronostics sont-ils garantis ?</summary><p>oui.ce site a une probabilité de 99% même appuyé sur des statistiques. Un abonnement donne accès à des analyses sures</p></details>
+      <details><summary>Comment je reçois les pronostics ?</summary><p>Après ton paiement, tu reçois ton accès sur WhatsApp.</p></details>
+      <details><summary>Combien miser ?</summary><p>Ne mise jamais d'argent dont tu as besoin pour vivre. Fixe-toi une limite avant de jouer et respecte-la.</p></details>
+      <details><summary>Puis-je me faire rembourser ?</summary><p>Contacte-nous sur WhatsApp en cas de problème avec ton paiement ou ton accès, nous regardons chaque cas.</p></details>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <a class="logo" href="#">Play DigitX</a>
+    <p>Service réservé aux personnes de 18 ans et plus. Les paris sportifs comportent des risques de perte d'argent. Joue de façon responsable.</p>
+    <p>Play DigitX vend des analyses et des pronostics. Nous ne prenons pas de paris et ne garantissons aucun gain.</p>
+    <p>© 2026 Play DigitX</p>
+  </div>
+</footer>
+
+<script>
+  // À MODIFIER : ton numéro WhatsApp, avec l'indicatif du pays, sans + ni espaces (Cameroun = 237)
+  const WHATSAPP = "237657862297"
+  // Les boutons de formule ouvrent WhatsApp avec un message prêt à envoyer
+  document.querySelectorAll("[data-plan]").forEach(function (lien) {
+    const message = "Bonjour, je souhaite prendre la formule " + lien.dataset.plan + " de Play DigitX.";
+    lien.href = "https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent(message);
+    lien.target = "_blank";
+    lien.rel = "noopener";
+  });
+
+  // Les barres de la fiche se remplissent une fois, au chargement
+  window.addEventListener("load", function () {
+    document.querySelectorAll(".rempli").forEach(function (barre) {
+      barre.style.width = barre.dataset.w + "%";
+    });
+  });
+</script>
+</body>
+</html>
